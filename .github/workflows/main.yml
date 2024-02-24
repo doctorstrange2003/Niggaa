@@ -1,6 +1,5 @@
 on:
-  push:
-    branches: [ nigga ]
+  workflow_dispatch:
 jobs:
   node-docker:
     runs-on: ubuntu-latest
