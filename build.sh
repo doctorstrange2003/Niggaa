@@ -2,6 +2,25 @@
 
 #set -e
 
+# Telegram Bot Integration
+post_msg(){
+	curl -s -X POST "https://api.telegram.org/bot$token/sendMessage" \
+	-d chat_id="$chat_id" \
+	-d "disable_web_page_preview=true" \
+	-d "parse_mode=html" \
+	-d text="$1"
+}
+
+push(){
+	curl -F document=@$1 "https://api.telegram.org/bot$token/sendDocument" \
+	-F chat_id="$chat_id" \
+	-F "disable_web_page_preview=true" \
+	-F "parse_mode=html" \
+	-F caption="$2"
+}
+
+##----------------------------------------------------------##
+
 ## Copy this script inside the kernel directory
 KERNEL_DEFCONFIG=vendor/miatoll-perf_defconfig
 ANYKERNEL3_DIR=$PWD/AnyKernel3/
@@ -13,8 +32,10 @@ export KBUILD_BUILD_USER=TxExcalibur
 export KBUILD_COMPILER_STRING="$($HOME/cosmic/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 
 if ! [ -d "$HOME/cosmic" ]; then
-echo "Clang not found! Cloning..."
-if ! git clone -q https://gitlab.com/GhostMaster69-dev/cosmic-clang --depth=1 --single-branch ~/cosmic; then
+	then
+    post_msg " Cloning Proton Clang 13 ToolChain "
+	git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
+	PATH="${KERNEL_DIR}/clang/bin:$PATH" then
 echo "Cloning failed! Aborting..."
 exit 1
 fi
@@ -40,6 +61,10 @@ echo "**** Kernel defconfig is set to $KERNEL_DEFCONFIG ****"
 echo -e "$blue***********************************************"
 echo "          BUILDING KERNEL          "
 echo -e "***********************************************$nocol"
+
+    # Push Notification
+    post_msg "<b>$KBUILD_BUILD_VERSION CI Build Triggered</b>%0A<b>DockerOS: </b><code>$DISTRO</code>%0A<b>Kernel Version : </b><code>$KERVER</code>%0A<b>Date : </b><code>$(TZ=Asia/Kolkata date)</code>%0A<b>Device : </b><code>$VENDOR [$DEVICE]</code>%0A<b>Version : </b><code>$CUSTOM_VERSION</code>%0A<b>Pipeline Host : </b><code>$KBUILD_BUILD_HOST</code>%0A<b>Host Core Count : </b><code>$PROCS</code>%0A<b>Compiler Used : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>Linker : </b><code>$LINKER</code>%0a<b>Branch : </b><code>$CI_BRANCH</code>%0A<b>Top Commit : </b><a href='$DRONE_COMMIT_LINK'>$COMMIT_HEAD</a>"
+    
 make $KERNEL_DEFCONFIG O=out
 make -j$(nproc --all) O=out \
                       ARCH=arm64 \
