@@ -6,15 +6,15 @@
 KERNEL_DEFCONFIG=vendor/miatoll-perf_defconfig
 ANYKERNEL3_DIR=$PWD/AnyKernel3/
 FINAL_KERNEL_ZIP=Niggatron-KSU-MiAtoll-$(date '+%Y%m%d').zip
-export PATH="$HOME/cosmic/bin:$PATH"
+export PATH="$HOME/proton/bin:$PATH"
 export ARCH=arm64
 export KBUILD_BUILD_HOST=Github-CI
 export KBUILD_BUILD_USER=TxExcalibur
-export KBUILD_COMPILER_STRING="$($HOME/cosmic/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+export KBUILD_COMPILER_STRING="$($HOME/proton/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 
 if ! [ -d "$HOME/proton" ]; then
 echo "Clang not found! Cloning..."
-if ! git clone --depth=1 https://github.com/kdrag0n/proton-clang.git; then
+if ! git clone -q https://github.com/kdrag0n/proton-clang --depth=1 --single-branch ~/proton; then
 echo "Cloning failed! Aborting..."
 exit 1
 fi
