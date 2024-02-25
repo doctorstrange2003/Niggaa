@@ -12,9 +12,9 @@ export KBUILD_BUILD_HOST=Github-CI
 export KBUILD_BUILD_USER=TxExcalibur
 export KBUILD_COMPILER_STRING="$($HOME/cosmic/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 
-if ! [ -d "$HOME/cosmic" ]; then
+if ! [ -d "$HOME/proton" ]; then
 echo "Clang not found! Cloning..."
-if ! git clone -q https://gitlab.com/GhostMaster69-dev/cosmic-clang --depth=1 --single-branch ~/cosmic; then
+if ! git clone --depth=1 https://github.com/kdrag0n/proton-clang.git; then
 echo "Cloning failed! Aborting..."
 exit 1
 fi
